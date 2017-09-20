@@ -7,19 +7,41 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
+
+using FruitAppAPI.DBContexts;
+using FruitAppAPI.Services.Interfaces;
+using FruitAppAPI.Services;
 
 namespace FruitAppAPI
 {
     public class Startup
     {
         public IConfiguration Configuration { get; }
-        public Startup(IConfiguration configuration)
+        private IHostingEnvironment _env;
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
         }
 
-        public void ConfigureServices(IServiceCollection services, IHostingEnvironment env)
+        public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<AppDBContext>(options =>
+            {
+                if (_env.IsDevelopment())
+                {
+                    options.UseInMemoryDatabase("DB");
+                }
+                else
+                {
+                    options.UseSqlServer(Configuration.GetValue<string>("SQL"));
+                }
+            });
+
+            services.AddScoped<IProviderService, ProviderService>();
+
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -30,9 +52,12 @@ namespace FruitAppAPI
                 app.UseDeveloperExceptionPage();
             }
 
-            app.Run(async (context) =>
+            app.UseMvc(config =>
             {
-                await context.Response.WriteAsync("Hello World!");
+                config.MapAreaRoute(
+                    "api",
+                    "api",
+                    "{area:exists}/{controller}/{action}/{id?}");
             });
         }
     }
