@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using FruitAppAPI.DBContexts;
 using FruitAppAPI.Services.Interfaces;
 using FruitAppAPI.Services;
+using Neo4jClient;
 
 namespace FruitAppAPI
 {
@@ -27,6 +28,10 @@ namespace FruitAppAPI
 
         public void ConfigureServices(IServiceCollection services)
         {
+            IGraphClient graphClient = new GraphClient(new Uri(Configuration.GetValue<string>("Neo4j")));
+
+            services.AddSingleton(graphClient);
+
             services.AddDbContext<AppDBContext>(options =>
             {
                 if (_env.IsDevelopment())
