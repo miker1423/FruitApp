@@ -7,7 +7,9 @@ using Neo4jClient;
 using FruitAppAPI.DBContexts;
 using FruitAppAPI.Models;
 using FruitAppAPI.Services.Interfaces;
+using FruitAppAPI.Extensions;
 using FruitAppAPI.NeoModels;
+using FruitAppAPI.ViewModels;
 
 namespace FruitAppAPI.Services
 {
@@ -24,11 +26,11 @@ namespace FruitAppAPI.Services
             _DbContext = dBContext;
         }
 
-        public async Task<Guid> CreateProvider(Provider provider)
+        public async Task<Guid> CreateProvider(ProviderVM provider)
         {
             provider.Id = Guid.NewGuid();
 
-            await _DbContext.Providers.AddAsync(provider);
+            await _DbContext.Providers.AddAsync(provider.ToEntity());
             var saveSql = _DbContext.SaveChangesAsync();
             var createNode = _providersGraphService.CreateProvider(provider);
 

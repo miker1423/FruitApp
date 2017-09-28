@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-using FruitAppAPI.Services.Interfaces;
 using FruitAppAPI.Models;
+using FruitAppAPI.Extensions;
+using FruitAppAPI.ViewModels;
+using FruitAppAPI.Services.Interfaces;
 
 namespace FruitAppAPI.Api.Controllers
 {
@@ -35,7 +37,7 @@ namespace FruitAppAPI.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Provider provider)
+        public async Task<IActionResult> Post([FromBody]ProviderVM provider)
         {
             try
             {

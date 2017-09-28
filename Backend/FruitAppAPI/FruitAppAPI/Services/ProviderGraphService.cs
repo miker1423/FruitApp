@@ -6,6 +6,7 @@ using Neo4jClient;
 
 using FruitAppAPI.Models;
 using FruitAppAPI.NeoModels;
+using FruitAppAPI.ViewModels;
 using FruitAppAPI.Services.Interfaces;
 
 namespace FruitAppAPI.Services
@@ -19,13 +20,14 @@ namespace FruitAppAPI.Services
             _graphClient = graphClient;
         }
 
-        public async Task CreateProvider(Provider provider)
+        public async Task CreateProvider(ProviderVM provider)
         {
-            var fruitList = new List<string>();
             await _graphClient.Cypher
                               .Match("(fruit:NeoFruit)")
-                              .Where((NeoFruit fruit) => fruitList.Contains(fruit.Name))
-                              .Create("fruit<-[:CAN_SELL]-(provider:NeoProvider {newProvider})")
+                              .Match("(cert:NeoCertificate)")
+                              .Where((NeoFruit fruit) => provider.Fruits.Contains(fruit.Name))
+                              .Where((NeoCertificate certificate )=> provider.Certificates.Contains(certificate.Name))
+                              .Create("fruit<-[:CAN_SELL]-(provider:NeoProvider {newProvider})-[:HAS-CERTIFICATE]->certificate")
                               .WithParam("newProvider", new NeoProvider { Id = provider.Id.ToString() })
                               .ExecuteWithoutResultsAsync();
         }

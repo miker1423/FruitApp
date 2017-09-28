@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using FruitAppAPI.Models;
+using FruitAppAPI.ViewModels;
 
 namespace FruitAppAPI.Services.Interfaces
 {
@@ -11,7 +12,7 @@ namespace FruitAppAPI.Services.Interfaces
     {
         Task<List<Provider>> GetProviders();
         Task<Provider> GetProvider(Guid id);
-        Task<Guid> CreateProvider(Provider provider);
+        Task<Guid> CreateProvider(ProviderVM provider);
         Task UpdateProvider(Provider provider);
     }
 }
