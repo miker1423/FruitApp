@@ -29,6 +29,7 @@ namespace FruitAppAPI
         public void ConfigureServices(IServiceCollection services)
         {
             IGraphClient graphClient = new GraphClient(new Uri(Configuration.GetValue<string>("Neo4j")));
+            graphClient.Connect();
 
             services.AddSingleton(graphClient);
 
@@ -45,6 +46,9 @@ namespace FruitAppAPI
             });
 
             services.AddScoped<IProviderService, ProviderService>();
+            services.AddScoped<ICertificatesService, CertificatesService>();
+            services.AddScoped<IFruitGraphService, FruitGraphService>();
+            services.AddScoped<IProvidersGraphService, ProviderGraphService>();
 
             services.AddMvc();
         }
