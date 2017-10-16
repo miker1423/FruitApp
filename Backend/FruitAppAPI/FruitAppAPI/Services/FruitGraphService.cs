@@ -30,6 +30,16 @@ namespace FruitAppAPI.Services
             return Task.WhenAll(createTasks);
         }
 
+        public Task<IEnumerable<string>> GetFruits()
+        {
+            return Task.FromResult(_graphClient.Cypher
+                .Match("(fruit:NeoFruit)")
+                .Return(fruit => fruit.As<NeoFruit>())
+                .Results
+                .Select(fruit => fruit.Name)
+                .Distinct());
+        }
+
         public Task FindAndRelate(string nodeId, string fruitName)
         {
             return _graphClient.Cypher
@@ -39,7 +49,7 @@ namespace FruitAppAPI.Services
                 .Create("(provider)-[:CAN_SELL]->(fruit)")
                 .ExecuteWithoutResultsAsync();
         }
-
+        
         private Task CreateIfNotExists(string fruitName)
         {
             var newFruit = new NeoFruit

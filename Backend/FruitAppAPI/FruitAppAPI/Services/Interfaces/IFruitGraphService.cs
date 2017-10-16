@@ -9,5 +9,6 @@ namespace FruitAppAPI.Services.Interfaces
     {
         Task CreateFruits(List<string> fruits);
         Task FindAndRelate(string nodeId, string fruitName);
+        Task<IEnumerable<string>> GetFruits();
     }
 }

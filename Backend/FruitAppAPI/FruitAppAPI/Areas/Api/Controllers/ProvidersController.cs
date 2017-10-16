@@ -42,7 +42,7 @@ namespace FruitAppAPI.Api.Controllers
             try
             {
                 var id = await _providerService.CreateProvider(provider);
-                return Json(new { Id = id.ToString() });
+                return CreatedAtAction(nameof(this.Get), new { Id = id.ToString() });
             }
             catch (Exception ex)
             {

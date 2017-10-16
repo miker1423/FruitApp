@@ -30,6 +30,17 @@ namespace FruitAppAPI.Services
             return Task.WhenAll(createTasks);
         }
 
+        public Task<IEnumerable<string>> GetCertificates()
+        {
+            return Task.FromResult(_graphClient.Cypher
+                .Match("(cert:NeoCertificate)")
+                .Return(cert => cert.As<NeoCertificate>())
+                .Results
+                .Select(cert => cert.Name)
+                .Distinct());
+        }
+
+
         public Task FindAndRelate(string nodeId, string certName)
         {
             return _graphClient.Cypher

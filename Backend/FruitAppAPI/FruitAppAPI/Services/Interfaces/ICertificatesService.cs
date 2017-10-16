@@ -9,5 +9,6 @@ namespace FruitAppAPI.Services.Interfaces
     {
         Task CreateCertificates(List<string> certificates);
         Task FindAndRelate(string nodeId, string certName);
+        Task<IEnumerable<string>> GetCertificates();
     }
 }

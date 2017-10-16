@@ -8,11 +8,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Neo4jClient;
 
+using FruitAppAPI.IdConfig;
 using FruitAppAPI.DBContexts;
 using FruitAppAPI.Services.Interfaces;
 using FruitAppAPI.Services;
-using Neo4jClient;
+using FruitAppAPI.Models;
+using FruitAppAPI.Utils;
 
 namespace FruitAppAPI
 {
@@ -33,22 +37,38 @@ namespace FruitAppAPI
 
             services.AddSingleton(graphClient);
 
+            var keyVault = new KeyVaultUtils(
+                Configuration.GetValue<string>("KeyVaultClientId"),
+                Configuration.GetValue<string>("KeyVaultClientSecret"),
+                Configuration.GetValue<string>("KeyVaultUrl"));
+
+            var certTask = keyVault.GetCertificate(Configuration.GetValue<string>("CertName")).GetAwaiter();
+            
             services.AddDbContext<AppDBContext>(options =>
             {
-                if (_env.IsDevelopment())
-                {
-                    options.UseInMemoryDatabase("DB");
-                }
-                else
-                {
-                    options.UseSqlServer(Configuration.GetValue<string>("SQL"));
-                }
+                options.UseSqlServer(Configuration.GetValue<string>("SQL"));
             });
+
+            services.AddDbContext<UsersDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetValue<string>("SQL"));
+            });
+
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<UsersDbContext>()
+                .AddDefaultTokenProviders();
 
             services.AddScoped<IProviderService, ProviderService>();
             services.AddScoped<ICertificatesService, CertificatesService>();
             services.AddScoped<IFruitGraphService, FruitGraphService>();
             services.AddScoped<IProvidersGraphService, ProviderGraphService>();
+
+            services.AddIdentityServer()
+                .AddSigningCredential(certTask.GetResult())
+                .AddInMemoryApiResources(Config.GetApiResources())
+                .AddInMemoryClients(Config.GetClients())
+                .AddAspNetIdentity<ApplicationUser>();
+                
 
             services.AddMvc();
         }
@@ -56,10 +76,14 @@ namespace FruitAppAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            MigrateDb(app);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseIdentityServer();
 
             app.UseMvc(config =>
             {
@@ -68,6 +92,18 @@ namespace FruitAppAPI
                     "api",
                     "{area:exists}/{controller}/{action}/{id?}");
             });
+        }
+
+        private void MigrateDb(IApplicationBuilder app)
+        {
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetRequiredService<AppDBContext>();
+                context.Database.Migrate();
+
+                var context2 = serviceScope.ServiceProvider.GetRequiredService<UsersDbContext>();
+                context2.Database.Migrate();
+            }
         }
     }
 }
