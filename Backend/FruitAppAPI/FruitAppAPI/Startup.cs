@@ -62,6 +62,7 @@ namespace FruitAppAPI
             services.AddScoped<ICertificatesService, CertificatesService>();
             services.AddScoped<IFruitGraphService, FruitGraphService>();
             services.AddScoped<IProvidersGraphService, ProviderGraphService>();
+            services.AddScoped<IOrdersService, OrdersService>();
 
             services.AddIdentityServer()
                 .AddSigningCredential(certTask.GetResult())
@@ -90,6 +91,11 @@ namespace FruitAppAPI
                 config.MapAreaRoute(
                     "api",
                     "api",
+                    "{area:exists}/{controller}/{action}/{id?}");
+
+                config.MapAreaRoute(
+                    "main",
+                    "main",
                     "{area:exists}/{controller}/{action}/{id?}");
             });
         }

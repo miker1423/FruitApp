@@ -34,37 +34,23 @@ namespace FruitAppAPI.Services
 
             var newProvider = new NeoProvider { Id = provider.Id.ToString() };
 
-            await CreateProvider(newProvider);
-            var certList = new List<Task>();
-            var fruitList = new List<Task>();
-
-            var fruitTask = Task.Run(() =>
-            {
-                foreach (var fruit in provider.Fruits)
-                {
-                    fruitList.Add(_fruitGraphService.FindAndRelate(newProvider.Id, fruit));
-                }
-            });
-
-            var certTask = Task.Run(() =>
-            {
-                foreach (var cert in provider.Certificates)
-                {
-                    fruitList.Add(_certificatesService.FindAndRelate(newProvider.Id, cert));
-                }
-            });
-
-            await Task.WhenAll(fruitTask, certTask);
-            await Task.WhenAll(certList);
-            await Task.WhenAll(fruitList);
-        }
-        
-        private Task CreateProvider(NeoProvider newProvider)
-        {
-            return _graphClient.Cypher
-                .Create("(provider:NeoProvider {newProvider})")
-                .WithParam("newProvider", newProvider)
+            await _graphClient.Cypher
+                .Match("(fruit:NeoFruit)")
+                .Match("(cert:NeoCertificate)")
+                .Where("fruit.Name IN {fruits}")
+                .WithParam("fruits", provider.Fruits)
+                .AndWhere("cert.Name IN {certificates}")
+                .WithParam("certificates", provider.Certificates)
+                .CreateUnique("(cert)<-[:HAS]-(provider:NeoProvider {newProvider})-[:CAN_SELL]->(fruit)")
+                .WithParam("newProvider", provider)
                 .ExecuteWithoutResultsAsync();
         }
+
+        public Task DeleteProvider(Guid id) =>
+            _graphClient.Cypher
+                .OptionalMatch("(provider:NeoProvider)-[r]->()")
+                .Where((NeoProvider provider) => provider.Id == id.ToString())
+                .Delete("r, provider")
+                .ExecuteWithoutResultsAsync();
     }
 }

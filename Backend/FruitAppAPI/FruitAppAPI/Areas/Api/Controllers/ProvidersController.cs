@@ -9,7 +9,7 @@ using FruitAppAPI.Extensions;
 using FruitAppAPI.ViewModels;
 using FruitAppAPI.Services.Interfaces;
 
-namespace FruitAppAPI.Api.Controllers
+namespace FruitAppAPI.Areas.Api.Controllers
 {
     [Area("api")]
     [Route("api/[controller]")]
@@ -62,6 +62,17 @@ namespace FruitAppAPI.Api.Controllers
             {
                 return BadRequest($"Something went wrong {ex.Message}");
             }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            if (Guid.TryParse(id, out var ID))
+            {
+                await _providerService.Delete(ID);
+                return Ok();
+            }
+            return BadRequest();
         }
     }
 }

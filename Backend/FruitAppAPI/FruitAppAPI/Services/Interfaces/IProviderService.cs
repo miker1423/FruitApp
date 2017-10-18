@@ -14,5 +14,6 @@ namespace FruitAppAPI.Services.Interfaces
         Task<Provider> GetProvider(Guid id);
         Task<Guid> CreateProvider(ProviderVM provider);
         Task UpdateProvider(Provider provider);
+        Task Delete(Guid id);
     }
 }

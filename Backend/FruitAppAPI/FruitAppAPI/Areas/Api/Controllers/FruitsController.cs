@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using FruitAppAPI.Services.Interfaces;
 
-namespace FruitAppAPI.Api.Controllers
+namespace FruitAppAPI.Areas.Api.Controllers
 {
     [Area("api")]
     [Route("api/[controller]")]

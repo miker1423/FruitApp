@@ -9,4 +9,12 @@ namespace FruitAppAPI.NeoModels
     {
         public string Id { get; set; }
     }
+
+    public class NeoProviderComparer : IEqualityComparer<NeoProvider>
+    {
+        public bool Equals(NeoProvider x, NeoProvider y) =>
+            x.Id == y.Id;
+
+        public int GetHashCode(NeoProvider obj) => obj.Id.GetHashCode();
+    }
 }

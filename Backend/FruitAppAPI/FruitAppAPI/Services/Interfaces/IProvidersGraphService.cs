@@ -11,5 +11,6 @@ namespace FruitAppAPI.Services.Interfaces
     public interface IProvidersGraphService
     {
         Task CreateProvider(ProviderVM provider);
+        Task DeleteProvider(Guid id);
     }
 }

@@ -40,6 +40,14 @@ namespace FruitAppAPI.Services
             return provider.Id;
         }
 
+        public async Task Delete(Guid id)
+        {
+            var query = _DbContext.Providers.Where(provider => provider.Id == id).First();
+            _DbContext.Remove(query);
+            await _providersGraphService.DeleteProvider(id);
+            await _DbContext.SaveChangesAsync();
+        }
+
         public Task<Provider> GetProvider(Guid id)
         {
             var query = _DbContext.Providers.Where(provider => provider.Id == id);

@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Identity;
 using FruitAppAPI.Models;
 using FruitAppAPI.ViewModels.Account;
 
-namespace FruitAppAPI.Api.Controllers
+namespace FruitAppAPI.Areas.Main.Controllers
 {
-    [Area("api")]
+    [Area("main")]
     public class AccountController : Controller
     {
         public readonly UserManager<ApplicationUser> _userManager;

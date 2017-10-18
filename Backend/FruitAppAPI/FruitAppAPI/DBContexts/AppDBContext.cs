@@ -11,6 +11,7 @@ namespace FruitAppAPI.DBContexts
     public class AppDBContext : DbContext
     {
         public DbSet<Provider> Providers { get; set; }
+        public DbSet<Client> Clients { get; set; }
 
         public AppDBContext(DbContextOptions<AppDBContext> options)
             : base(options)
