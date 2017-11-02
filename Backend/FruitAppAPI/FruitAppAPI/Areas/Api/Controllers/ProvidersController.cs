@@ -16,7 +16,6 @@ namespace FruitAppAPI.Areas.Api.Controllers
     public class ProvidersController : Controller
     {
         private readonly IProviderService _providerService;
-
         public ProvidersController(IProviderService providerService)
         {
             _providerService = providerService;
@@ -51,7 +50,7 @@ namespace FruitAppAPI.Areas.Api.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody]Provider provider)
+        public async Task<IActionResult> Put([FromBody]ProviderVM provider)
         {
             try
             {

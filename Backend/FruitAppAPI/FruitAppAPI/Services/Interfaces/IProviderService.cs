@@ -13,7 +13,7 @@ namespace FruitAppAPI.Services.Interfaces
         Task<List<Provider>> GetProviders();
         Task<Provider> GetProvider(Guid id);
         Task<Guid> CreateProvider(ProviderVM provider);
-        Task UpdateProvider(Provider provider);
+        Task UpdateProvider(ProviderVM provider);
         Task Delete(Guid id);
     }
 }

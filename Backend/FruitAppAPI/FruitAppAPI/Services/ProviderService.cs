@@ -61,10 +61,12 @@ namespace FruitAppAPI.Services
 
         public Task<List<Provider>> GetProviders() => Task.FromResult(_DbContext.Providers.ToList());
 
-        public async Task UpdateProvider(Provider provider)
+        public async Task UpdateProvider(ProviderVM provider)
         {
-            _DbContext.Providers.Update(provider);
+            _DbContext.Providers.Update(provider.ToEntity());
             await _DbContext.SaveChangesAsync();
+
+            await _providersGraphService.UpdateProvider(provider);
         }
     }
 }
