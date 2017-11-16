@@ -49,8 +49,10 @@ namespace FruitAppAPI.Services
                 };
 
                 var message = new CloudQueueMessage(JsonConvert.SerializeObject(createdAction));
-                await queue.AddMessageAsync(message, TimeSpan.MaxValue, TimeSpan.Zero, null, null);
+                await queue.AddMessageAsync(message);
             }
+
+            return false;
         }
 
         public Task<bool> Delete() => throw new NotImplementedException();
