@@ -68,5 +68,23 @@ namespace FruitAppAPI.Services
                 .Where((NeoProvider provider) => provider.Id == id.ToString())
                 .Delete("r, provider")
                 .ExecuteWithoutResultsAsync();
+
+
+        public IEnumerable<NeoProvider> FindProviders(string fruitName, List<string> certificates)
+        {
+            var query = _graphClient.Cypher
+                .Match("(cert:NeoCertificate)-[:HAS]-(provider:NeoProvider)-[:CAN_SELL]-(fruit:NeoFruit)")
+                .Where((NeoFruit fruit) => fruit.Name == fruitName);
+
+            if (certificates != null || certificates?.Count != 0)
+            {
+                query.AndWhere("cert.Name IN {certificates}")
+                .WithParam("certificates", certificates);
+            }
+
+            return query.Return(provider => provider.As<NeoProvider>())
+                .Results
+                .Distinct(new NeoProviderComparer());
+        }
     }
 }

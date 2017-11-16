@@ -15,5 +15,6 @@ namespace FruitAppAPI.Services.Interfaces
         Task<Guid> CreateProvider(ProviderVM provider);
         Task UpdateProvider(ProviderVM provider);
         Task Delete(Guid id);
+        Task<IEnumerable<Provider>> FindProviders(string fruitName, List<string> certificates);
     }
 }

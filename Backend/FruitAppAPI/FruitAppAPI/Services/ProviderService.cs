@@ -68,5 +68,19 @@ namespace FruitAppAPI.Services
 
             await _providersGraphService.UpdateProvider(provider);
         }
+
+        public async Task<IEnumerable<Provider>> FindProviders(string fruitName, List<string> certificates)
+        {
+            return await Task.Run(() =>
+            {
+                var selectedProviders = _providersGraphService
+                    .FindProviders(fruitName, certificates)
+                    .Select(providers => Guid.Parse(providers.Id));
+
+                var findMany = _DbContext.Providers.Where(provider => selectedProviders.Contains(provider.Id));
+
+                return findMany.Take(10);
+            });
+        }
     }
 }

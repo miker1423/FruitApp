@@ -2,36 +2,61 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Neo4jClient;
+using Microsoft.Extensions.Options;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Table;
+using Microsoft.WindowsAzure.Storage.Queue;
+using Newtonsoft.Json;
 
+using FruitAppAPI.Utils.ConfigModels;
 using FruitAppAPI.Services.Interfaces;
-using FruitAppAPI.NeoModels;
+using FruitAppAPI.ViewModels.Orders;
+using FruitAppAPI.Models;
 
 namespace FruitAppAPI.Services
 {
     public class OrdersService : IOrdersService
     {
-        private readonly IGraphClient _graphClient;
-        public OrdersService(IGraphClient graphClient)
+        private readonly IProviderService _providerService;
+        private readonly CloudTableClient _cloudTables;
+        private readonly CloudQueueClient _cloudQueues;
+
+        public OrdersService(
+            IOptions<TableConfig> options,
+            IProviderService providerService)
         {
-            _graphClient = graphClient;
+            var account = CloudStorageAccount.Parse(options.Value.ConnectionString);
+            _cloudTables = account.CreateCloudTableClient();
+            _cloudQueues = account.CreateCloudQueueClient();
         }
 
-        public IEnumerable<NeoProvider> FindProviders(string fruitName, List<string> certificates)
+        public async Task<bool> Create(OrderCreateVM orderCreateVM)
         {
-            var query = _graphClient.Cypher
-                .Match("(cert:NeoCertificate)-[:HAS]-(provider:NeoProvider)-[:CAN_SELL]-(fruit:NeoFruit)")
-                .Where((NeoFruit fruit) => fruit.Name == fruitName);
+            var orderID = Guid.NewGuid();
+            var queue = _cloudQueues.GetQueueReference(orderID.ToString());
 
-            if(certificates != null || certificates?.Count != 0)
+            if(await queue.CreateIfNotExistsAsync())
             {
-                query.AndWhere("cert.Name IN {certificates}")
-                .WithParam("certificates", certificates);
-            }
+                var transactionID = Guid.NewGuid();
 
-            return query.Return(provider => provider.As<NeoProvider>())
-                .Results
-                .Distinct(new NeoProviderComparer());
+                var createdAction = new QueueModel
+                {
+                    Action = ACTIONS.CREATED,
+                    PrevQuantity = 0f,
+                    ChangeQuantity = orderCreateVM.Quantity,
+                    PostQuantity = orderCreateVM.Quantity,
+                    TransactionID = transactionID
+                };
+
+                var message = new CloudQueueMessage(JsonConvert.SerializeObject(createdAction));
+                await queue.AddMessageAsync(message, TimeSpan.MaxValue, TimeSpan.Zero, null, null);
+            }
         }
+
+        public Task<bool> Delete() => throw new NotImplementedException();
+        public Task<bool> Get() => throw new NotImplementedException();
+        public Task<bool> Update() => throw new NotImplementedException();
+
+        private string SanitizeGuid(Guid guid) => guid.ToString().Replace("-", "");
     }
 }

@@ -13,6 +13,7 @@ using Neo4jClient;
 
 using FruitAppAPI.IdConfig;
 using FruitAppAPI.DBContexts;
+using FruitAppAPI.Utils.ConfigModels;
 using FruitAppAPI.Services.Interfaces;
 using FruitAppAPI.Services;
 using FruitAppAPI.Models;
@@ -58,12 +59,17 @@ namespace FruitAppAPI
                 .AddEntityFrameworkStores<UsersDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.Configure<TableConfig>(config =>
+            {
+                config.ConnectionString = Configuration.GetValue<string>("TableString");
+            });
+
             services.AddScoped<IProviderService, ProviderService>();
             services.AddScoped<ICertificatesService, CertificatesService>();
             services.AddScoped<IFruitGraphService, FruitGraphService>();
             services.AddScoped<IProvidersGraphService, ProviderGraphService>();
             services.AddScoped<IOrdersService, OrdersService>();
-
+            
             services.AddIdentityServer()
                 .AddSigningCredential(certTask.GetResult())
                 .AddInMemoryApiResources(Config.GetApiResources())

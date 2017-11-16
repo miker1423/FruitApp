@@ -20,7 +20,6 @@ namespace FruitAppAPI.Areas.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]OrderCreateVM orderCreateVM) =>
-            Json(_orderService.FindProviders(orderCreateVM.Fruit, orderCreateVM.Certificates));
+        public IActionResult Post([FromBody]OrderCreateVM orderCreateVM) => Ok();
     }
 }
