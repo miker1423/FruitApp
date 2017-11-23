@@ -37,6 +37,9 @@ namespace FruitAppAPI.Areas.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]Client client)
         {
+            var tryFind = _context.Clients.Where(cl => cl.PhoneNumber == client.PhoneNumber);
+            if (tryFind.Count() > 0) return BadRequest("The client already existed");
+            
             client.Id = Guid.NewGuid();
             _context.Clients.Add(client);
             await _context.SaveChangesAsync();

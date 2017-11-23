@@ -30,6 +30,9 @@ namespace FruitAppAPI.Services
         {
             provider.Id = Guid.NewGuid();
 
+            var tryFind = _DbContext.Providers.Where(prov => prov.PhoneNumber == provider.PhoneNumber);
+            if (tryFind.Count() > 0) throw new Exception("already existed");
+
             await _DbContext.Providers.AddAsync(provider.ToEntity());
             var saveSql = _DbContext.SaveChangesAsync();
             var createNode = _providersGraphService.CreateProvider(provider);

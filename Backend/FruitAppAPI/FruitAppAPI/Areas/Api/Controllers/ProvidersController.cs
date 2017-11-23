@@ -45,7 +45,7 @@ namespace FruitAppAPI.Areas.Api.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"Something went wrong {ex.Message}");
+                return BadRequest($"Something went wrong: {ex.Message}");
             }
         }
 
