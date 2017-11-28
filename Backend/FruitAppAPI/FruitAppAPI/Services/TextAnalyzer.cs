@@ -11,9 +11,9 @@ namespace FruitAppAPI.Services
     public class TextAnalyzer : ITextAnalyzer
     {
         private readonly LuisClient _luisClient;
-        public TextAnalyzer()
+        public TextAnalyzer(LuisClient luisClient)
         {
-            _luisClient = new LuisClient("37495ff6-5363-4893-ba88-7986ef582910", "9098e287246643ccac9f238365c16bda");
+            _luisClient = luisClient;
         }
 
         public async Task<bool> IsYes(string message)

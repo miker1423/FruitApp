@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Cognitive.LUIS;
 using Neo4jClient;
 
 using FruitAppAPI.IdConfig;
@@ -18,7 +19,6 @@ using FruitAppAPI.Services.Interfaces;
 using FruitAppAPI.Services;
 using FruitAppAPI.Models;
 using FruitAppAPI.Utils;
-using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace FruitAppAPI
 {
@@ -64,6 +64,19 @@ namespace FruitAppAPI
             {
                 config.ConnectionString = Configuration.GetValue<string>("TableString");
             });
+
+            services.Configure<TwilioConfig>(config =>
+            {
+                config.AccountSid = Configuration.GetValue<string>("TwilioSid");
+                config.AuthToken = Configuration.GetValue<string>("TwilioToken");
+                config.PhoneNumber = Configuration.GetValue<string>("TwilioPhone");
+            });
+
+            var luisClient = new LuisClient(
+                Configuration.GetValue<string>("LuisAppId"),
+                Configuration.GetValue<string>("LuisAppKey"));
+
+            services.AddSingleton(luisClient);
 
             services.AddScoped<IProviderService, ProviderService>();
             services.AddScoped<ICertificatesService, CertificatesService>();
