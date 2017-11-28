@@ -20,6 +20,22 @@ namespace FruitAppAPI.Areas.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]OrderCreateVM orderCreateVM) => Ok();
+        public async Task<IActionResult> Post([FromBody]OrderCreateVM orderCreateVM) 
+            => Json(new { ID = await _orderService.Create(orderCreateVM) });
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(string id)
+        {
+            if(Guid.TryParse(id, out var ID))
+            {
+                return Json(await _orderService.Get(ID));
+            }
+
+            return BadRequest("The provided ID is not valid");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get() 
+            => Json(await _orderService.Get());
     }
 }

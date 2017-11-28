@@ -15,18 +15,18 @@ namespace FruitAppAPI.Services
         PhoneNumber myNumber;
         public SmsService()
         {
-            const string accoundtSid = "";
-            const string authToken = "";
+            const string accoundtSid = "AC7039b3c3079a057849417c9deb8ed26c";
+            const string authToken = "bdce9a45d3693dd6876cb041992e900a";
 
             TwilioClient.Init(accoundtSid, authToken);
 
-            myNumber = new PhoneNumber("");
+            myNumber = new PhoneNumber("+14154170925");
         }
 
         public async Task<string> SendMessage(string message, string phone)
         {
             var number = new PhoneNumber(phone);
-            var sentMessage = await MessageResource.CreateAsync(number, body: message);
+            var sentMessage = await MessageResource.CreateAsync(number, body: message, from: myNumber);
 
             return sentMessage.Sid;
         }

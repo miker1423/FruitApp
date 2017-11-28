@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 
 using FruitAppAPI.Models;
 using FruitAppAPI.Extensions;
@@ -22,7 +23,8 @@ namespace FruitAppAPI.Areas.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get() => Json(await _providerService.GetProviders());
+        public async Task<IActionResult> Get() 
+            => Json(await _providerService.GetProviders());
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)

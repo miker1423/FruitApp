@@ -18,6 +18,7 @@ using FruitAppAPI.Services.Interfaces;
 using FruitAppAPI.Services;
 using FruitAppAPI.Models;
 using FruitAppAPI.Utils;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace FruitAppAPI
 {
@@ -69,13 +70,15 @@ namespace FruitAppAPI
             services.AddScoped<IFruitGraphService, FruitGraphService>();
             services.AddScoped<IProvidersGraphService, ProviderGraphService>();
             services.AddScoped<IOrdersService, OrdersService>();
+            services.AddScoped<ISmsService, SmsService>();
+            services.AddScoped<ITextAnalyzer, TextAnalyzer>();
             
             services.AddIdentityServer()
                 .AddSigningCredential(certTask.GetResult())
                 .AddInMemoryApiResources(Config.GetApiResources())
                 .AddInMemoryClients(Config.GetClients())
                 .AddAspNetIdentity<ApplicationUser>();
-                
+
 
             services.AddMvc();
         }

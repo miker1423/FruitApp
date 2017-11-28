@@ -47,19 +47,22 @@ namespace FruitAppAPI.Services
 
         public async Task UpdateProvider(ProviderVM provider)
         {
-            await _fruitGraphService.CreateFruits(provider.Fruits);
-            await _certificatesService.CreateCertificates(provider.Certificates);
+            if(provider.Fruits != null && provider.Certificates != null)
+            {
+                await _fruitGraphService.CreateFruits(provider.Fruits);
+                await _certificatesService.CreateCertificates(provider.Certificates);
 
-            await _graphClient.Cypher
-                .Match("(fruit:NeoFruit)", "(cert:NeoCertificate)", "(provider:NeoProvider")
-                .Where("fruit.Name IN {fruits}")
-                .WithParam("fruits", provider.Fruits)
-                .AndWhere("cert.Name IN {certificates}")
-                .WithParam("certificates", provider.Certificates)
-                .Where((NeoProvider neoProvider) => neoProvider.Id == provider.Id.ToString())
-                .CreateUnique("(cert)<-[:HAS]-(provider:NeoProvider {newProvider})-[:CAN_SELL]->(fruit)")
-                .WithParam("newProvider", provider)
-                .ExecuteWithoutResultsAsync();
+                await _graphClient.Cypher
+                    .Match("(fruit:NeoFruit)", "(cert:NeoCertificate)", "(provider:NeoProvider")
+                    .Where("fruit.Name IN {fruits}")
+                    .WithParam("fruits", provider.Fruits)
+                    .AndWhere("cert.Name IN {certificates}")
+                    .WithParam("certificates", provider.Certificates)
+                    .Where((NeoProvider neoProvider) => neoProvider.Id == provider.Id.ToString())
+                    .CreateUnique("(cert)<-[:HAS]-(provider:NeoProvider {newProvider})-[:CAN_SELL]->(fruit)")
+                    .WithParam("newProvider", provider)
+                    .ExecuteWithoutResultsAsync();
+            }
         }
 
         public Task DeleteProvider(Guid id) =>
