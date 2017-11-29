@@ -120,9 +120,14 @@ namespace FruitAppAPI.Services
                 operation.Insert(entity);
             }
 
-            var results = await messageSent.ExecuteBatchAsync(operation);
+            if(operation.Count != 0)
+            {
+                var results = await messageSent.ExecuteBatchAsync(operation);
 
-            return results.Where(code => code.HttpStatusCode != 204).Count() == 0;
+                return results.Where(code => code.HttpStatusCode != 204).Count() == 0;
+            }
+
+            return true;
         }
 
         async Task<bool> CreateOrder(OrderCreateVM orderCreateVM, Guid orderID)

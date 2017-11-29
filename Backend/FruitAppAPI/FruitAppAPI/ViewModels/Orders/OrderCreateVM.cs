@@ -10,7 +10,6 @@ namespace FruitAppAPI.ViewModels.Orders
         public float Quantity { get; set; }
         public string Fruit { get; set; }
         public List<string> Certificates { get; set; }
-        public Guid ClientID { get; set; }
         public float Latitude { get; set; }
         public float Longitude { get; set; }
     }

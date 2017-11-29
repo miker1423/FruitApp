@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Text;
 using System.Linq;
+using System.Collections.Generic;
 
 using Twilio.AspNet.Core;
 using Twilio.TwiML;
@@ -30,21 +31,28 @@ namespace FruitAppAPI.Areas.Api.Controllers
         {
             var response = new MessagingResponse();
 
+            var body = await ProcessBody();
+
+            var number = body["From"].Substring(3);
+            var newNumber = "+" + number;
+
+            if(await _textAnalyzer.IsYes(body["Body"])) await _ordersService.UpdateOrderWithPhone(newNumber);
+
+            return TwiML(response);
+        }  
+
+        private async Task<Dictionary<string, string>> ProcessBody()
+        {
             var size = HttpContext.Request.ContentLength ?? 0;
             var buffer = new byte[size];
             var body = await HttpContext.Request.Body.ReadAsync(buffer, 0, (int)size);
-            var responseDictionary = Encoding.UTF8.GetString(buffer)
+            var bodyDictionary = Encoding.UTF8.GetString(buffer)
                 .Split('&')
                 .Select(str => str.Split('='))
                 .ToDictionary(arr => arr[0], arr2 => arr2[1]);
 
-            var number = responseDictionary["From"].Substring(3);
-            var newNumber = "+" + number;
-
-            if(await _textAnalyzer.IsYes(responseDictionary["Body"])) await _ordersService.UpdateOrderWithPhone(newNumber);
-
-            return TwiML(response);
-        }  
+            return bodyDictionary;
+        }
     }
 
     public class TwilioMessage

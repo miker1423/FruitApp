@@ -21,7 +21,7 @@ namespace FruitAppAPI.Areas.Api.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]OrderCreateVM orderCreateVM) 
-            => Json(new { ID = await _orderService.Create(orderCreateVM) });
+            => CreatedAtAction(nameof(this.Get), new { ID = await _orderService.Create(orderCreateVM) });
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)
