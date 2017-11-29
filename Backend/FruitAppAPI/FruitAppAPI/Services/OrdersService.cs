@@ -88,9 +88,11 @@ namespace FruitAppAPI.Services
             var tasks = new List<Task>(phones.Count());
             foreach (var phone in phones)
             {
-                var message = new
+                var message = new QueueModel
                 {
-                    Message = $"Sent message to {phone}"
+                    Message = $"Sent message to {phone}",
+                    Action = ACTIONS.UPDATED,
+                    TransactionID = Guid.NewGuid()
                 };
 
                 var queueMessage = new CloudQueueMessage(JsonConvert.SerializeObject(message));

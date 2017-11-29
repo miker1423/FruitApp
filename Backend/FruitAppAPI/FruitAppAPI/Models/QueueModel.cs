@@ -7,6 +7,7 @@ namespace FruitAppAPI.Models
 {
     public class QueueModel
     {
+        public string Message { get; set; }
         public ACTIONS Action { get; set; }
         public float PrevQuantity { get; set; }
         public float ChangeQuantity { get; set; }
