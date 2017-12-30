@@ -104,24 +104,24 @@ namespace FruitAppAPI.Services
 
         async Task<bool> SaveMessageRequested(IEnumerable<string> phones, double quantityRequested, Guid orderID)
         {
-            var operation = new TableBatchOperation();
-            foreach (var phone in phones)
+            if(phones.Count() != 0)
             {
-                var entity = new DynamicTableEntity()
+                var operation = new TableBatchOperation();
+                foreach (var phone in phones)
                 {
-                    RowKey = phone,
-                    PartitionKey = orderID.ToString(),
-                    Properties = new Dictionary<string, EntityProperty>
+                    var entity = new DynamicTableEntity()
+                    {
+                        RowKey = phone,
+                        PartitionKey = orderID.ToString(),
+                        Properties = new Dictionary<string, EntityProperty>
                     {
                         { "Quantity", new EntityProperty(quantityRequested) }
                     }
-                };
+                    };
 
-                operation.Insert(entity);
-            }
+                    operation.Insert(entity);
+                }
 
-            if(operation.Count != 0)
-            {
                 var results = await messageSent.ExecuteBatchAsync(operation);
 
                 return results.Where(code => code.HttpStatusCode != 204).Count() == 0;

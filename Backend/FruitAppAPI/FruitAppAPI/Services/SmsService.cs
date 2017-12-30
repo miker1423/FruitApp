@@ -24,13 +24,10 @@ namespace FruitAppAPI.Services
 
         public async Task<string> SendMessage(string message, string phone)
         {
-            /*
             var number = new PhoneNumber(phone);
             var sentMessage = await MessageResource.CreateAsync(number, body: message, from: myNumber);
 
             return sentMessage.Sid;
-            */
-            return Guid.NewGuid().ToString();
         }
     }
 }
